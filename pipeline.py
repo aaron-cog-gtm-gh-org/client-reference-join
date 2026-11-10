@@ -15,7 +15,7 @@ def run():
             CREATE OR REPLACE TABLE rpt_loans AS
             SELECT e.*, c.client_name, c.rm_id, c.segment
             FROM enr_loans e
-            JOIN client_ref c ON e.client_id = c.client_id
+            JOIN client_ref c ON e.client_id = c.client_id AND c.is_current
         """)
 
 

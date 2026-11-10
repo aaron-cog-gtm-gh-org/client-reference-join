@@ -26,6 +26,15 @@ def test_reference_fields_and_idempotency(database):
         assert db.execute("SELECT * FROM rpt_loans").fetchall() == first
 
 
+def test_only_current_client_version(database):
+    with duckdb.connect(str(database)) as db:
+        db.execute("UPDATE enr_loans SET client_id = 'C01'")
+    run()
+    with duckdb.connect(str(database)) as db:
+        assert db.execute("SELECT count(*) FROM client_ref WHERE client_id = 'C01'").fetchone()[0] == 2
+        assert db.execute("SELECT loan_id, rm_id FROM rpt_loans").fetchall() == [("L1", "RM01")]
+
+
 def test_empty_input(database):
     with duckdb.connect(str(database)) as db:
         db.execute("DELETE FROM enr_loans")
